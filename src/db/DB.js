@@ -7,7 +7,7 @@ class DB {
       user: "root",
       password: "password",
       port: 3306,
-      database,
+      database: "company_db",
     };
 
     this.database = database;
