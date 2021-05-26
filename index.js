@@ -20,28 +20,38 @@ const loadMenu = async () => {
       case "View All Employees":
         await getAllEmployeesFullData();
         break;
-      case "View Departments":
+      case "View All Departments":
         await viewAllDepartments();
         break;
-      case "View Roles":
+      case "View All Roles":
         await viewAllRoles();
         break;
-      case "View employees by Manager":
-        await viewEmployeesByManager();
+      case "View All Employees By Department":
+        await viewAllEmployeesByManager();
         break;
-      case "Add a Department":
+      case "View All Employees By Manager":
+        await viewAllEmployeesByManager();
+        break;
+      case "Add Employee":
+        await addEmployee();
+        break;
+      case "Add Department":
         await addDepartment();
         break;
-      case "Add a Role":
+      case "Add Role":
         await addRole();
         break;
       case "Update Employee Role":
         await updateEmployeeRole();
         break;
-      case "Add an Employee":
-        await addEmployee();
+      case "Update Employee Manager":
+        await updateEmployeeManager();
         break;
-      case "End":
+      case "View Total Budget By Department":
+        await updateTotalBudgetByDepartment();
+        break;
+
+      case "Exit":
         break;
       default:
         break;
