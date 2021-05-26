@@ -48,3 +48,153 @@ const loadMenu = async () => {
     }
   });
 };
+
+const viewEmployeesByManager = async () => {
+  let managerList;
+  let managers;
+
+  await newSearch.getAllManagerNames().then((res) => {
+    managers = res;
+    managerList = managers.map((employee) => employee.name);
+    managerList.push("Cancel");
+  });
+
+  await inquirer
+    .prompt({
+      message: "Choose a manager:",
+      type: "list",
+      choices: managerList,
+      name: "choice",
+    })
+    .then(async function (answer) {
+      switch (answer.choice) {
+        case "Cancel":
+          break;
+        default:
+          manager = managers.find(
+            (employee) => employee.name === answer.choice
+          );
+          await newSearch.getEmployeesByManager(manager).then((res) => {
+            console.table(res);
+          });
+          break;
+      }
+    });
+  loadMenu();
+};
+
+const getAllEmployeesFullData = async () => {
+  await newSearch.getAllEmployeesFullData().then((res) => {
+    console.table(res);
+  });
+  loadMenu();
+};
+
+const viewAllRoles = async () => {
+  await newSearch.viewAllRoles().then((res) => {
+    console.table(res);
+  });
+  loadMenu();
+};
+
+const viewAllDepartments = async () => {
+  await newSearch.getAllDepartments().then((res) => {
+    console.table(res);
+  });
+  loadMenu();
+};
+
+const addDepartment = async () => {
+  await inquirer.prompt(questions.addDepartment).then(async (answer) => {
+    await newSearch.addDepartment(answer.department).then((res) => {
+      console.log(`New Department ID: ${res}`);
+    });
+  });
+
+  loadMenu();
+};
+
+const addRole = async () => {
+  let question = questions.addRole;
+  let departments;
+  let departmentNames;
+
+  await newSearch.getAllDepartments().then((res) => {
+    departmentNames = res.map((employee) => employee.name);
+    departments = res;
+  });
+
+  //set the list of choices
+  question.find((employee) => employee.name === "department").choices =
+    departmentNames;
+  question.find((employee) => employee.name === "department").pageSize =
+    departmentNames.length;
+
+  await inquirer.prompt(question).then(async (answers) => {
+    let role = {
+      title: answers.title,
+      salary: answers.salary,
+      department_id: departments.find(
+        (employee) => employee.name === answers.department
+      ).id,
+    };
+
+    await newSearch.addRole(role).then((res) => {
+      console.log(res);
+    });
+  });
+
+  loadMenu();
+};
+
+const updateEmployeeRole = async () => {
+  let question = questions.updateEmployeeRole;
+  let confirm = questions.confirmInput;
+  let roles;
+  let roleNames;
+  let employees;
+  let employeeNames;
+  let employee;
+  let role;
+
+  await newSearch.getAllRoles().then((res) => {
+    roles = res;
+    roleNames = res.map((employee) => employee.title);
+  });
+
+  await newSearch.getAllEmployees().then((res) => {
+    employees = res;
+    employeeNames = res.map(
+      (employee) => `${employee.first_name} ${employee.last_name}`
+    );
+  });
+
+  question.find((employee) => employee.name === "employee").choices =
+    employeeNames;
+  question.find((employee) => employee.name === "employee").pageSize =
+    employeeNames.length;
+  question.find((employee) => employee.name === "role").choices = roleNames;
+  question.find((employee) => employee.name === "role").pageSize =
+    roleNames.length;
+
+  await inquirer.prompt(question).then(async (answers) => {
+    employee = employees.find(
+      (employee) =>
+        `${employee.first_name} ${employee.last_name}` === answers.employee
+    );
+    role = roles.find((employee) => employee.title === answers.role);
+  });
+
+  confirm.message = `Would you like to update the role of ${employee.first_name} ${employee.last_name} to ${role.title}? Please Confirm`;
+
+  await inquirer.prompt(confirm).then(async (answer) => {
+    if (answer.confirm) {
+      await newSearch.updateEmployeeRole(employee, role).then((res) => {
+        console.log(res);
+        return;
+      });
+    }
+  });
+
+  loadMenu();
+};
