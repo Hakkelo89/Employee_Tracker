@@ -4,7 +4,7 @@ const inquirer = require("inquirer");
 const consoleTable = require("console.table");
 
 const Questions = require("./lib/questions");
-const UserSearch = require("./lib/UserSearch");
+const UserSearch = require("./lib/userSearch");
 
 const questions = new Questions();
 const newSearch = new UserSearch();
