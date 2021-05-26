@@ -1,6 +1,6 @@
 //npm requires
 const inquirer = require("inquirer");
-const init = () => {};
+
 const consoleTable = require("console.table");
 
 const Questions = require("./lib/questions");
