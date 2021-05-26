@@ -1,5 +1,5 @@
 const inquirer = require("inquirer");
-const DB = require("./db/DB");
+const DB = require("./src/db/DB");
 const init = async () => {
   const db = new DB("company_db");
   await db.start();
