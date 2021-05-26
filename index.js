@@ -198,3 +198,54 @@ const updateEmployeeRole = async () => {
 
   loadMenu();
 };
+
+const addEmployee = async () => {
+  let question = questions.addEmployee;
+  let managers;
+  let managerNames;
+  let roles;
+  let roleNames;
+
+  await newSearch.getAllManagerNames().then((res) => {
+    managerNames = res.map((employee) => employee.name);
+    managers = res;
+    managerNames.push("None");
+  });
+
+  await newSearch.getAllRoles().then((res) => {
+    roles = res;
+    roleNames = res.map((employee) => employee.title);
+  });
+
+  question.find((employee) => employee.name === "role").choices = roleNames;
+  question.find((employee) => employee.name === "role").pageSize =
+    roleNames.length;
+  question.find((employee) => employee.name === "manager").choices =
+    managerNames;
+  question.find((employee) => employee.name === "manager").pageSize =
+    managerNames.length;
+
+  await inquirer.prompt(question).then(async (answers) => {
+    let role_id = roles.find((employee) => employee.title === answers.role).id;
+
+    let manager_id =
+      answers.manager === "None"
+        ? null
+        : managers.find((employee) => employee.name === answers.manager).id;
+
+    let employee = {
+      first_name: answers.first_name,
+      last_name: answers.last_name,
+      role_id: role_id,
+      manager_id: manager_id,
+    };
+
+    await newSearch.addEmployee(employee).then((res) => {
+      console.log("New Employee ID: " + res);
+    });
+  });
+
+  loadMenu();
+};
+
+init();
