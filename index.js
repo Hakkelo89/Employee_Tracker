@@ -145,6 +145,116 @@ const init = async () => {
         const data = await db.query(query);
         console.log("Employee Added Successfully");
       }
+
+      if (answers.action === "viewAllRoles") {
+        const query = "SELECT * FROM role";
+        const data = await db.query(query);
+        console.table(data);
+      }
+
+      if (answers.action === "removeEmployee") {
+        const empSelect = "SELECT * FROM employee";
+        const empData = await db.query(empSelect);
+        console.table(empData);
+        const removedEmployee = [
+          {
+            type: "input",
+            name: "id",
+            message: "Please input id which user you want to delete?",
+          },
+        ];
+        const deleteQuery = await inquirer.prompt(removedEmployee);
+        const query = `DELETE FROM employee WHERE ID = ('${deleteQuery.id}');`;
+        const data = await db.query(query);
+
+        const reselect = "SELECT * FROM employee";
+        const newData = await db.query(reselect);
+        console.table(newData);
+        console.log("Employee Removed Successfully");
+      }
+
+      if (answers.action === "updateEmployeeRole") {
+        const empSelect = "SELECT * FROM employee";
+        const empData = await db.query(empSelect);
+        console.table(empData);
+        const updateEmployeeRole = [
+          {
+            type: "input",
+            name: "id",
+            message: "Please input id which user you want to update?",
+          },
+          {
+            type: "input",
+            name: "role_id",
+            message: "Please input new role id for employee?",
+          },
+        ];
+        const updateQuery = await inquirer.prompt(updateEmployeeRole);
+        const query = `UPDATE employee SET role_id = ('${updateQuery.role_id}') WHERE ID = ('${updateQuery.id}');`;
+        const data = await db.query(query);
+
+        const reselect = "SELECT * FROM employee";
+        const newData = await db.query(reselect);
+        console.table(newData);
+        console.log("Employee Role Updated Successfully");
+      }
+
+      if (answers.action === "updateEmployeeManager") {
+        const empSelect = "SELECT * FROM employee";
+        const empData = await db.query(empSelect);
+        console.table(empData);
+        const updateEmployeeManager = [
+          {
+            type: "input",
+            name: "id",
+            message: "Please input id which user you want to update?",
+          },
+          {
+            type: "input",
+            name: "manager_id",
+            message: "Please input new manager id for employee?",
+          },
+        ];
+        const updateQuery = await inquirer.prompt(updateEmployeeManager);
+        const query = `UPDATE employee SET manager_id = ('${updateQuery.manager_id}') WHERE ID = ('${updateQuery.id}');`;
+        const data = await db.query(query);
+
+        const reselect = "SELECT * FROM employee";
+        const newData = await db.query(reselect);
+        console.table(newData);
+        console.log("Employee Manager Updated Successfully");
+      }
+
+      if (answers.action === "addRole") {
+        const role = "SELECT * FROM role";
+        const roleData = await db.query(role);
+        console.table(roleData);
+        const addRole = [
+          {
+            type: "input",
+            name: "title",
+            message: "Please input a title for new role?",
+          },
+          {
+            type: "input",
+            name: "salary",
+            message: "Please set the salary for this role?",
+          },
+          {
+            type: "input",
+            name: "department_id",
+            message: "Please set the department id?",
+          },
+        ];
+        const insertQuery = await inquirer.prompt(addRole);
+        const query = `INSERT INTO role (title, salary, department_id) VALUES ('${addRole.title}', '${addRole.salary}', '${addRole.department_id}');`;
+        const data = await db.query(query);
+
+        const reselect = "SELECT * FROM role";
+        const newData = await db.query(reselect);
+        console.table(newData);
+        console.log("New Role Added Successfully");
+      }
     }
   }
 };
