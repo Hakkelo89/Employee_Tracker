@@ -236,7 +236,7 @@ const init = async () => {
             message: "Please input a title for new role?",
           },
           {
-            type: "input",
+            type: "number",
             name: "salary",
             message: "Please set the salary for this role?",
           },
@@ -247,13 +247,76 @@ const init = async () => {
           },
         ];
         const insertQuery = await inquirer.prompt(addRole);
-        const query = `INSERT INTO role (title, salary, department_id) VALUES ('${addRole.title}', '${addRole.salary}', '${addRole.department_id}');`;
+        const query = `INSERT INTO role (title, salary, department_id) VALUES ('${insertQuery.title}', '${insertQuery.salary}', '${insertQuery.department_id}');`;
         const data = await db.query(query);
 
         const reselect = "SELECT * FROM role";
         const newData = await db.query(reselect);
         console.table(newData);
         console.log("New Role Added Successfully");
+      }
+
+      if (answers.action === "removeRole") {
+        const role = "SELECT * FROM role";
+        const roleData = await db.query(role);
+        console.table(roleData);
+        const removeRole = [
+          {
+            type: "input",
+            name: "id",
+            message: "Please input an id which role you want to remove?",
+          },
+        ];
+        const removeQuery = await inquirer.prompt(removeRole);
+        const query = `DELETE FROM role WHERE ID = ('${removeQuery.id}');`;
+        const data = await db.query(query);
+
+        const reselect = "SELECT * FROM role";
+        const newData = await db.query(reselect);
+        console.table(newData);
+        console.log("Role Removed Successfully");
+      }
+
+      if (answers.action === "addDepartment") {
+        const dp = "SELECT * FROM department";
+        const dpData = await db.query(dp);
+        console.table(dpData);
+        const addDepartment = [
+          {
+            type: "input",
+            name: "name",
+            message: "Please input department name?",
+          },
+        ];
+        const insertQuery = await inquirer.prompt(addDepartment);
+        const query = `INSERT INTO department (name) VALUES ('${insertQuery.name}');`;
+        const data = await db.query(query);
+
+        const reselect = "SELECT * FROM department";
+        const newData = await db.query(reselect);
+        console.table(newData);
+        console.log("New Department Added Successfully");
+      }
+
+      if (answers.action === "removeDepartment") {
+        const dp = "SELECT * FROM department";
+        const dpData = await db.query(dp);
+        console.table(dpData);
+        const removeDepartment = [
+          {
+            type: "input",
+            name: "id",
+            message: "Please input an id which department you want to remove?",
+          },
+        ];
+        const removeQuery = await inquirer.prompt(removeDepartment);
+        const query = `DELETE FROM department WHERE ID = ('${removeQuery.id}');`;
+        const data = await db.query(query);
+
+        const reselect = "SELECT * FROM department";
+        const newData = await db.query(reselect);
+        console.table(newData);
+        console.log("Department Removed Successfully");
       }
     }
   }
