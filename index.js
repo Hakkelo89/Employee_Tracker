@@ -16,6 +16,11 @@ const init = async () => {
           name: "View All Employees",
         },
         {
+          short: "Employees By Manager",
+          value: "viewEmployeesByManager",
+          name: "View Employees By Manager",
+        },
+        {
           short: "Employees By Role",
           value: "viewAllEmployeesByRole",
           name: "View All Employees By Role",
@@ -65,6 +70,14 @@ const init = async () => {
           name: "Remove Departments",
         },
         {
+          value: "viewAllDepartmentsBudgets",
+          name: "View All Departments Budgets",
+        },
+        {
+          value: "viewDepartmentsBudgetsById",
+          name: "View Departments Budgets By Id",
+        },
+        {
           short: "Exit",
           value: "exit",
           name: "Exit",
@@ -81,11 +94,28 @@ const init = async () => {
         const data = await db.query(query);
         console.table(data);
       }
+
+      if (answers.action === "viewEmployeesByManager") {
+        const managers = `SELECT * FROM employee WHERE manager_id IS NULL`;
+        const manData = await db.query(managers);
+        console.table(manData);
+        const answers = await inquirer.prompt({
+          name: "id",
+          type: "input",
+          message: "Please input a manager id?",
+        });
+        const empQuery = `SELECT * FROM employee WHERE manager_id =${answers.id}`;
+        const empData = await db.query(empQuery);
+
+        console.table(empData);
+      }
+
       if (answers.action === "viewAllDepartments") {
         const query = "SELECT * FROM department";
         const data = await db.query(query);
         console.table(data);
       }
+
       if (answers.action === "viewAllEmployeesByRole") {
         const roleQuery = "SELECT * FROM role";
         const allRoles = await db.query(roleQuery);
@@ -110,6 +140,7 @@ const init = async () => {
 
         console.table(employeeByRole);
       }
+
       if (answers.action === "addEmployee") {
         const roleQuery = "SELECT * FROM role";
         const allRoles = await db.query(roleQuery);
@@ -317,6 +348,52 @@ const init = async () => {
         const newData = await db.query(reselect);
         console.table(newData);
         console.log("Department Removed Successfully");
+      }
+
+      if (answers.action === "viewAllDepartmentsBudgets") {
+        const deps = `SELECT SUM(X.salary) as total_budget,
+        X.department_name,
+      X.department_id
+   FROM (
+          SELECT A.salary AS salary, 
+          A.title AS title, 
+          B.name AS department_name, 
+          B.id AS department_id
+     FROM company_db.role A
+     LEFT JOIN company_db.department B
+     ON A.department_id = B.id
+        ) X
+      GROUP BY X.department_id;`;
+        const depsData = await db.query(deps);
+        console.table(depsData);
+      }
+
+      if (answers.action === "viewDepartmentsBudgetsById") {
+        const deps = `SELECT * FROM department`;
+        const depsData = await db.query(deps);
+        console.table(depsData);
+        const answers = await inquirer.prompt({
+          name: "id",
+          type: "input",
+          message: "Please input a department id?",
+        });
+        const budgetQuery = `SELECT SUM(X.salary) as total_budget,
+        X.department_name,
+      X.department_id
+   FROM (
+          SELECT A.salary AS salary, 
+          A.title AS title, 
+          B.name AS department_name, 
+          B.id AS department_id
+     FROM company_db.role A
+     LEFT JOIN company_db.department B
+     ON A.department_id = B.id
+        ) X
+          WHERE X.department_id=${answers.id}
+      GROUP BY X.department_id; `;
+        const budgetData = await db.query(budgetQuery);
+
+        console.table(budgetData);
       }
     }
   }
